@@ -66,12 +66,6 @@ pip install -r requirements.txt
 streamlit run main.py
 ```
 
-## 🔑 Konfigurasi API
-Untuk menggunakan API BPS, Anda perlu:
-1. Mendaftar di [Website BPS](https://webapi.bps.go.id)
-2. Dapatkan API key
-3. Ganti API key di `main.py`
-
 ## 📊 Struktur Data
 Data yang digunakan mencakup:
 - Nilai ekspor bulanan per komoditas
