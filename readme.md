@@ -56,23 +56,12 @@ git clone [URL_REPOSITORY_ANDA]
 cd [NAMA_FOLDER_PROJECT]
 ```
 
-### 2. Buat Virtual Environment
-```bash
-# Windows
-python -m venv venv
-venv\Scripts\activate
-
-# Linux/Mac
-python3 -m venv venv
-source venv/bin/activate
-```
-
-### 3. Install Dependencies
+### 2. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Jalankan Aplikasi
+### 3. Jalankan Aplikasi
 ```bash
 streamlit run main.py
 ```
