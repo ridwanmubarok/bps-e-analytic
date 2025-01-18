@@ -21,6 +21,33 @@ Menggunakan data historis dari BPS (Badan Pusat Statistik) dan model machine lea
 - Plotly
 - Requests
 
+## �� Demo Aplikasi
+
+### Video Demo
+Anda dapat melihat demonstrasi aplikasi melalui link berikut:
+[Video Demo Aplikasi](https://drive.google.com/file/d/1r1XesSGJR6Vz9fH_fRJOJvOaRvaaws7r/view?usp=sharing)
+
+### Fitur yang Ditampilkan dalam Video
+1. Data Historis
+   - Visualisasi data ekspor 2022-2023
+   - Tabel dan grafik per komoditas
+
+2. Hasil Prediksi
+   - Prediksi nilai ekspor 2024-2045
+   - Grafik prediksi interaktif
+   - Analisis tren per komoditas
+
+3. Kesimpulan
+   - Analisis performa model
+   - Rekomendasi berdasarkan tren
+   - Metrik evaluasi R²
+
+4. Teori dan Metodologi
+   - Penjelasan model regresi linear
+   - Metrik evaluasi
+   - Proses analisis data
+
+
 ## 📦 Cara Instalasi
 
 ### 1. Clone Repository
