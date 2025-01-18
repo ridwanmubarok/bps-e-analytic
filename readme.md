@@ -13,7 +13,7 @@ Menggunakan data historis dari BPS (Badan Pusat Statistik) dan model machine lea
 - Tampilan interaktif dengan Streamlit
 
 ## 💻 Teknologi yang Digunakan
-- Python 3.9+
+- Python 3.12.6
 - Streamlit
 - Scikit-learn
 - Pandas
