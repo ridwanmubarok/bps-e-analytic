@@ -35,10 +35,30 @@
 - Data ekspor bulanan hasil pertanian
 - Periode: 2022-2023
 
-### Karakteristik Data
-- Time series bulanan
-- Multiple komoditas
-- Nilai dalam satuan USD
+### Implementasi Pengambilan Data
+```python
+def get_data_from_api():
+    """Mengambil data dari API BPS"""
+    url = "https://webapi.bps.go.id/v1/api/list/model/data/lang/ind/domain/0000/var/2310/key/[API_KEY]"
+    response = requests.get(url)
+    return response.json()
+
+def prepare_data(data):
+    """Menyiapkan data dari API"""
+    formatted_response = {
+        "status": "OK",
+        "data-availability": "available",
+        "var": data.get("var", []),
+        "turvar": data.get("turvar", []),
+        "labelvervar": data.get("labelvervar", ""),
+        "vervar": data.get("vervar", []),
+        "tahun": data.get("tahun", []),
+        "turtahun": data.get("turtahun", []),
+        "metadata": data.get("metadata", {}),
+        "datacontent": data.get("datacontent", {})
+    }
+    return formatted_response
+```
 
 ### Struktur Data
 - Variabel: Nilai ekspor per bulan
@@ -50,76 +70,155 @@
 ## 3. Data Preparation
 
 ### Ekstraksi Fitur
-1. Rata-rata nilai ekspor
-2. Volatilitas (standar deviasi)
-3. Tren pertumbuhan
-4. Nilai maksimum
-5. Nilai minimum
+```python
+def create_feature_matrix(formatted_response, years):
+    """Membuat matriks fitur untuk clustering"""
+    features = []
+    commodities = []
+    
+    for komoditas in formatted_response['vervar'][:-1]:
+        komoditas_name = komoditas['label']
+        komoditas_id = str(komoditas['val'])
+        
+        # Mengumpulkan nilai bulanan
+        monthly_values = []
+        for year in years:
+            year_suffix = str(year)[-2:]
+            for month_num in range(1, 13):
+                key = f"{komoditas_id}231001{year_suffix}{month_num}"
+                val = formatted_response['datacontent'].get(key)
+                if val is not None:
+                    monthly_values.append(float(val))
+        
+        if len(monthly_values) > 0:
+            # Menghitung fitur
+            mean_export = np.mean(monthly_values)
+            std_export = np.std(monthly_values)
+            growth_trend = (monthly_values[-1] - monthly_values[0]) / monthly_values[0]
+            max_export = np.max(monthly_values)
+            min_export = np.min(monthly_values)
+            
+            features.append([mean_export, std_export, growth_trend, max_export, min_export])
+            commodities.append(komoditas_name)
+    
+    return np.array(features), commodities
+```
 
 ### Pra-pemrosesan
-- Penanganan missing values
-- Standardisasi fitur
-- Persiapan data untuk clustering
+```python
+def process_numeric_data(df):
+    """Konversi data ke numeric dengan handling missing values"""
+    numeric_df = df.copy()
+    for col in numeric_df.columns[1:]:
+        numeric_df[col] = pd.to_numeric(numeric_df[col].replace('-', np.nan))
+    return numeric_df
+```
 
 ---
 
 ## 4. Modeling
 
-### Metode: K-Means Clustering
+### Implementasi K-Means Clustering
+```python
+def perform_clustering(features, n_clusters=3):
+    """Melakukan clustering menggunakan K-Means"""
+    scaler = StandardScaler()
+    scaled_features = scaler.fit_transform(features)
+    
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+    clusters = kmeans.fit_predict(scaled_features)
+    
+    silhouette_avg = silhouette_score(scaled_features, clusters)
+    
+    return clusters, kmeans.cluster_centers_, silhouette_avg, scaled_features
+```
 
-#### Parameter
-- Jumlah cluster: 2-5
-- Random state: 42
-- Standardized features
+### Visualisasi Cluster
+```python
+# Visualisasi 3D
+fig = px.scatter_3d(
+    cluster_df,
+    x=x_dim,
+    y=y_dim,
+    z=z_dim,
+    color='Cluster',
+    hover_name='Komoditas',
+    title=f'Clustering Komoditas Ekspor ({n_clusters} Cluster)'
+)
 
-#### Implementasi
-- Scikit-learn KMeans
-- Visualisasi interaktif dengan Plotly
-- Analisis multi-cluster
+# Visualisasi 2D
+fig = px.scatter(
+    cluster_df,
+    x=x_dim,
+    y=y_dim,
+    color='Cluster',
+    hover_name='Komoditas',
+    title=f'Clustering Komoditas Ekspor ({n_clusters} Cluster)'
+)
+```
 
 ---
 
 ## 5. Evaluation
 
-### Metrik Evaluasi
-1. Silhouette Score
-   - Mengukur kualitas cluster
-   - Range: -1 hingga 1
+### Implementasi Evaluasi
+```python
+# Evaluasi berbagai jumlah cluster
+silhouette_scores = []
+for k in range(2, 6):
+    _, _, score, _ = perform_clustering(features, k)
+    silhouette_scores.append(score)
 
-2. Inertia
-   - Within-cluster sum of squares
-   - Mengukur kohesi cluster
+# Visualisasi perbandingan score
+fig = px.line(
+    x=list(range(2, 6)),
+    y=silhouette_scores,
+    title='Perbandingan Silhouette Score',
+    labels={'x': 'Jumlah Cluster', 'y': 'Silhouette Score'}
+)
 
-### Hasil Evaluasi
-- Perbandingan performa berbagai jumlah cluster
-- Analisis karakteristik tiap cluster
-- Interpretasi hasil clustering
+# Hitung inertia
+inertia = KMeans(n_clusters=optimal_k, random_state=42).fit(scaled_features).inertia_
+```
 
 ---
 
 ## 6. Deployment
 
-### Implementasi
-- Aplikasi web interaktif dengan Streamlit
-- Visualisasi dinamis
-- Analisis real-time
-
-### Fitur Aplikasi
-1. Data Awal
-   - Visualisasi data mentah
-   - Statistik deskriptif
-
-2. Analisis Cluster
-   - Visualisasi 2D/3D
-   - Detail karakteristik
-
-3. Perbandingan Karakteristik
-   - Analisis komparatif
-   - Distribusi nilai
-
-4. Evaluasi
-   - Metrik performa
-   - Analisis hasil
+### Implementasi Streamlit
+```python
+def main():
+    st.set_page_config(
+        page_title="Analisis Clustering Ekspor Hasil Pertanian",
+        page_icon="📊",
+        layout="wide"
+    )
+    
+    # Tabs untuk analisis berbeda
+    tab1, tab2, tab3, tab4 = st.tabs([
+        "Data Awal",
+        "Analisis Cluster",
+        "Perbandingan Karakteristik",
+        "Evaluasi"
+    ])
+    
+    # Implementasi tiap tab
+    with tab1:
+        st.header("📋 Data Ekspor Hasil Pertanian")
+        # ... kode untuk tab Data Awal
+    
+    with tab2:
+        st.header("🔍 Analisis Cluster")
+        # ... kode untuk tab Analisis Cluster
+    
+    with tab3:
+        st.header("📊 Perbandingan Karakteristik")
+        # ... kode untuk tab Perbandingan
+    
+    with tab4:
+        st.header("📊 Evaluasi Model")
+        # ... kode untuk tab Evaluasi
+```
 
 ---
 
