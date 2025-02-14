@@ -5,7 +5,7 @@
 - NIM: 230401010053
 - Mata Kuliah: Data Mining
 - Program Studi: Teknik Informatika
-- Universitas: Universitas Nahdlatul Ulama Sidoarjo
+- Universitas: Universitas Siber Asia
 
 ## Slide 1: Pendahuluan
 
@@ -17,7 +17,7 @@
 - NIM: 230401010053
 - Mata Kuliah: Data Mining
 - Program Studi: Teknik Informatika
-- Universitas: Universitas Nahdlatul Ulama Sidoarjo
+- Universitas: Universitas Siber Asia
 
 ### Latar Belakang Singkat
 Sektor pertanian merupakan salah satu pilar utama perekonomian Indonesia, dengan kontribusi signifikan terhadap ekspor nasional. Dalam upaya mengoptimalkan strategi pengembangan ekspor pertanian, diperlukan pemahaman mendalam tentang pola dan karakteristik ekspor setiap komoditas. Analisis clustering menggunakan metode K-Means dapat membantu mengidentifikasi kelompok-kelompok komoditas dengan karakteristik serupa, yang dapat menjadi dasar pengambilan kebijakan yang lebih terarah.
