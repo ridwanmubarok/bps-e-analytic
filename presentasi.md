@@ -118,24 +118,67 @@ def process_numeric_data(df):
 
 ## 4. Modeling
 
+### Teori K-Means Clustering
+
+#### A. Pengertian
+K-Means adalah metode pengelompokan yang membagi data menjadi K kelompok berdasarkan kemiripan karakteristiknya. 
+- "K" adalah jumlah kelompok yang kita inginkan
+- "Means" berarti pusat kelompok dihitung dari rata-rata anggotanya
+
+#### B. Tujuan
+- Mengelompokkan data yang mirip dalam satu cluster
+- Memaksimalkan perbedaan antar cluster
+- Menemukan pola dalam data
+
+#### C. Cara Kerja Detail
+1. **Inisialisasi**
+   - Tentukan jumlah K cluster yang diinginkan
+   - Pilih K titik pusat (centroid) secara acak dari data
+
+2. **Iterasi**
+   - **Langkah Assignment**: Setiap data masuk ke cluster terdekat
+   - **Langkah Update**: Hitung ulang pusat cluster dari rata-rata anggotanya
+   - Ulangi sampai tidak ada perubahan signifikan
+
+3. **Konvergensi**
+   - Proses berhenti ketika:
+     * Posisi centroid tidak berubah
+     * Atau mencapai maksimum iterasi
+
+#### D. Kelebihan dan Kekurangan
+
+**Kelebihan:**
+- Mudah diimplementasikan
+- Cepat untuk data besar
+- Hasil mudah diinterpretasi
+
+**Kekurangan:**
+- Perlu menentukan K di awal
+- Sensitif terhadap outlier
+- Bisa terjebak di optimum lokal
+
 ### Implementasi K-Means Clustering
 ```python
 def perform_clustering(features, n_clusters=3):
     """Melakukan clustering menggunakan K-Means"""
+    # Standardisasi fitur
     scaler = StandardScaler()
     scaled_features = scaler.fit_transform(features)
     
+    # Inisialisasi dan fit model
     kmeans = KMeans(n_clusters=n_clusters, random_state=42)
     clusters = kmeans.fit_predict(scaled_features)
     
+    # Hitung kualitas clustering
     silhouette_avg = silhouette_score(scaled_features, clusters)
     
     return clusters, kmeans.cluster_centers_, silhouette_avg, scaled_features
 ```
 
-### Visualisasi Cluster
+### Visualisasi Hasil Clustering
+
+#### A. Visualisasi 3D
 ```python
-# Visualisasi 3D
 fig = px.scatter_3d(
     cluster_df,
     x=x_dim,
@@ -145,8 +188,10 @@ fig = px.scatter_3d(
     hover_name='Komoditas',
     title=f'Clustering Komoditas Ekspor ({n_clusters} Cluster)'
 )
+```
 
-# Visualisasi 2D
+#### B. Visualisasi 2D
+```python
 fig = px.scatter(
     cluster_df,
     x=x_dim,
@@ -156,6 +201,26 @@ fig = px.scatter(
     title=f'Clustering Komoditas Ekspor ({n_clusters} Cluster)'
 )
 ```
+
+### Penerapan pada Data Ekspor
+
+#### A. Fitur yang Digunakan
+1. Rata-rata nilai ekspor (menunjukkan skala ekspor)
+2. Volatilitas (menunjukkan stabilitas)
+3. Tren pertumbuhan (menunjukkan perkembangan)
+4. Nilai maksimum dan minimum (menunjukkan rentang)
+
+#### B. Proses Clustering
+1. Data dinormalisasi agar setiap fitur memiliki bobot yang sama
+2. Dilakukan clustering dengan berbagai nilai K (2-5)
+3. Evaluasi hasil dengan Silhouette Score
+4. Analisis karakteristik setiap cluster
+
+#### C. Interpretasi Hasil
+- **Cluster 1**: Komoditas dengan nilai ekspor tinggi dan stabil
+- **Cluster 2**: Komoditas dengan pertumbuhan tinggi
+- **Cluster 3**: Komoditas dengan volatilitas tinggi
+- **Cluster 4/5**: Variasi karakteristik lainnya
 
 ---
 
@@ -219,6 +284,76 @@ def main():
         st.header("📊 Evaluasi Model")
         # ... kode untuk tab Evaluasi
 ```
+
+---
+
+## Rumus dan Perhitungan yang Digunakan
+
+### 1. Perhitungan Karakteristik Data
+
+#### a. Nilai Rata-rata
+```python
+mean_export = np.mean(monthly_values)
+```
+Rumus: Rata-rata = (Jumlah semua nilai) / (Banyak data)
+- Menghitung nilai tengah dari data ekspor
+- Mengukur pusat atau nilai umum dari ekspor
+
+#### b. Tingkat Perubahan (Volatilitas)
+```python
+std_export = np.std(monthly_values)
+```
+Rumus: Simpangan Baku = √[(Jumlah(nilai - rata-rata)²) / (n-1)]
+- Mengukur seberapa besar nilai-nilai berbeda dari rata-rata
+- Semakin besar nilainya, semakin tidak stabil ekspor
+
+#### c. Pertumbuhan
+```python
+growth_trend = (monthly_values[-1] - monthly_values[0]) / monthly_values[0]
+```
+Rumus: Pertumbuhan = (Nilai akhir - Nilai awal) / Nilai awal
+- Menghitung persentase kenaikan/penurunan
+- Menunjukkan arah perkembangan ekspor
+
+### 2. Pengukuran Kualitas Pengelompokan
+
+#### a. Nilai Kemiripan (Silhouette Score)
+```python
+silhouette_avg = silhouette_score(scaled_features, clusters)
+```
+Rumus: Nilai = (Jarak ke cluster lain - Jarak dalam cluster) / Nilai terbesar
+- Mengukur seberapa mirip data dengan kelompoknya sendiri
+- Nilai 1: sangat mirip, -1: sangat tidak mirip
+
+#### b. Nilai Kekompakan (Inertia)
+```python
+inertia = kmeans.inertia_
+```
+Rumus: Total jarak setiap data ke pusat kelompoknya
+- Mengukur seberapa dekat data dalam satu kelompok
+- Semakin kecil nilainya semakin baik
+
+### 3. Penyesuaian Skala Data
+
+```python
+scaled_features = scaler.fit_transform(features)
+```
+Rumus: Nilai baru = (Nilai asli - Rata-rata) / Simpangan baku
+- Membuat semua data memiliki skala yang sama
+- Mencegah dominasi variabel dengan nilai besar
+
+### 4. Cara Kerja Pengelompokan (K-Means)
+
+Langkah-langkah:
+1. Tentukan pusat kelompok secara acak
+2. Ulangi sampai stabil:
+   - Masukkan data ke kelompok terdekat
+   - Perbarui pusat kelompok
+   
+Cara mengukur jarak:
+Jarak = √(selisih_x² + selisih_y² + ... + selisih_n²)
+- Menghitung seberapa jauh satu data dengan data lain
+- Digunakan untuk menentukan kelompok terdekat
 
 ---
 
