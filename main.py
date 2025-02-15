@@ -455,8 +455,17 @@ def main():
         initial_sidebar_state="collapsed"
     )
 
-    st.title("Analisis Clustering Kejadian Bencana Alam di Indonesia")
+    # Add title with name and student ID
+    st.title("Analisis dan Pengelompokan Pola Bencana Alam di Indonesia Menggunakan Metode K-Means Clustering")
     
+    # Add author info with custom styling
+    st.markdown("""
+    <div style='text-align: center; padding: 10px 0px 20px 0px;'>
+        <p style='font-size: 18px; margin: 0;'>Ridwan Mubarok</p>
+        <p style='font-size: 16px; color: #666; margin: 0;'>230401010053</p>
+    </div>
+    """, unsafe_allow_html=True)
+
     # Custom CSS untuk menu navigasi
     st.markdown("""
     <style>
