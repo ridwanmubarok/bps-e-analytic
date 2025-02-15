@@ -460,18 +460,27 @@ def main():
     
     # Add author info and social media links with custom styling
     st.markdown("""
-    <div style='text-align: center; padding: 10px 0px 30px 0px;'>
-        <h3 style='font-size: 20px; margin: 0; font-weight: normal;'>Ridwan Mubarok</h3>
+    <div style='text-align: left; padding: 20px; margin: 20px 0; 
+         border: 2px solid #f0f2f6; border-radius: 10px; 
+         background-color: #ffffff; max-width: 500px;'>
+        <h3 style='font-size: 20px; margin: 0; font-weight: normal; color: #0e1117;'>Ridwan Mubarok</h3>
         <p style='font-size: 16px; color: #666; margin: 5px 0 15px 0;'>230401010053</p>
-        <div style='display: flex; justify-content: center; gap: 20px;'>
-            <a href='https://www.linkedin.com/feed/' target='_blank' style='color: #0077B5; text-decoration: none;'>
+        <div style='display: flex; gap: 20px;'>
+            <a href='https://www.linkedin.com/in/ridwan-mubarok/' target='_blank' 
+               style='color: #0077B5; text-decoration: none; display: flex; align-items: center; gap: 5px;'>
                 <i class='fab fa-linkedin'></i> LinkedIn
             </a>
-            <a href='https://www.instagram.com/amubhya/' target='_blank' style='color: #E4405F; text-decoration: none;'>
+            <a href='https://www.instagram.com/amubhya/' target='_blank' 
+               style='color: #E4405F; text-decoration: none; display: flex; align-items: center; gap: 5px;'>
                 <i class='fab fa-instagram'></i> Instagram
             </a>
-            <a href='https://github.com/' target='_blank' style='color: #333; text-decoration: none;'>
+            <a href='https://github.com/ridwanmubarok' target='_blank' 
+               style='color: #333; text-decoration: none; display: flex; align-items: center; gap: 5px;'>
                 <i class='fab fa-github'></i> GitHub
+            </a>
+            <a href='https://amubhya.com' target='_blank' 
+               style='color: #2196F3; text-decoration: none; display: flex; align-items: center; gap: 5px;'>
+                <i class='fas fa-globe'></i> Website
             </a>
         </div>
     </div>
