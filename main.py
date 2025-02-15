@@ -32,7 +32,7 @@ def get_data_from_api():
     base_url = "https://webapi.bps.go.id/v1/api/interoperabilitas/datasource/simdasi/id/25/tahun/{}/id_tabel/MFZ0emxUcHBxOTB2R2F4Sk5oT2hqQT09/wilayah/0000000/key/b3dc419ec75b4bcd83a5ff680035a99e"
     
     all_data = []
-    years = range(2018, 2025)  # 2018-2024
+    years = range(2018, 2025)  
     
     for year in years:
         try:
@@ -40,12 +40,9 @@ def get_data_from_api():
             response = requests.get(url)
             data = response.json()
             
-            # Pastikan data memiliki struktur yang diharapkan
             if 'data-availability' in data and data['data-availability'] == 'available':
-                # Ekstrak data provinsi (kecuali total Indonesia)
-                provinces_data = data['data'][1]['data'][:-1]  # Exclude Indonesia total
+                provinces_data = data['data'][1]['data'][:-1]  
                 
-                # Tambahkan tahun ke setiap record
                 for province in provinces_data:
                     province['tahun'] = year
                 
@@ -67,7 +64,6 @@ def prepare_data(data):
     
     for item in data:
         try:
-            # Periksa struktur data
             if not isinstance(item, dict):
                 print(f"Skipping invalid data item: {item}")
                 continue
@@ -77,13 +73,11 @@ def prepare_data(data):
                 'Tahun': item['tahun']
             }
             
-            # Fungsi untuk membersihkan dan mengkonversi nilai
             def clean_and_convert(value):
                 if isinstance(value, dict) and 'value' in value:
                     value = value['value']
                 if value == '–' or value == '...' or value is None:
                     return 0
-                # Hapus tag HTML dan karakter khusus
                 value = str(value).replace('<sup>*</sup>', '').strip()
                 try:
                     return float(value)
@@ -91,7 +85,6 @@ def prepare_data(data):
                     print(f"Warning: Could not convert '{value}' to float, using 0")
                     return 0
             
-            # Mapping variabel yang tersedia
             variable_mapping = {
                 'Gempa Bumi': 'j8qw1r1yab',
                 'Tsunami': 'j7n3axnnjx',
@@ -105,14 +98,11 @@ def prepare_data(data):
                 'Gelombang Pasang/Abrasi': 'xryqgogeqw'
             }
             
-            # Tambahkan data bencana
             for bencana, var_id in variable_mapping.items():
                 try:
-                    # Handle both dict and list type variables
                     if isinstance(item.get('variables', {}), dict):
                         value = item['variables'].get(var_id, {'value': '0'})
                     else:
-                        # Jika variables adalah list, cari berdasarkan var_id
                         value = {'value': '0'}
                         for var in item.get('variables', []):
                             if var.get('var_id') == var_id:
@@ -130,10 +120,8 @@ def prepare_data(data):
             print(f"Error processing data item: {str(e)}")
             continue
     
-    # Buat DataFrame
     df = pd.DataFrame(provinces_data)
     
-    # Debug info
     print(f"Processed {len(provinces_data)} provinces")
     if len(provinces_data) > 0:
         print("Sample data structure:", provinces_data[0])
@@ -145,7 +133,6 @@ def perform_clustering(df):
     """
     Melakukan analisis clustering menggunakan K-Means
     """
-    # Persiapkan data untuk clustering dengan nama kolom yang sesuai
     features = [
         'Gempa Bumi',
         'Tsunami',
@@ -159,14 +146,12 @@ def perform_clustering(df):
         'Gelombang Pasang/Abrasi'
     ]
     
-    # Standardisasi fitur
     X = df[features].values
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
     
-    # Tentukan jumlah cluster optimal
     silhouette_scores = []
-    K = range(3, 7)  # Ubah range menjadi 3-6 cluster
+    K = range(3, 7) 
     for k in K:
         kmeans = KMeans(n_clusters=k, random_state=42)
         kmeans.fit(X_scaled)
@@ -175,7 +160,6 @@ def perform_clustering(df):
     
     optimal_k = K[np.argmax(silhouette_scores)]
     
-    # Lakukan clustering dengan jumlah cluster optimal
     kmeans = KMeans(n_clusters=optimal_k, random_state=42)
     df['cluster'] = kmeans.fit_predict(X_scaled)
     
@@ -185,13 +169,10 @@ def evaluate_clustering(df, X_scaled, kmeans, features):
     """
     Mengevaluasi performa model clustering dengan analisis detail
     """
-    # Silhouette score analysis
     silhouette_avg = silhouette_score(X_scaled, kmeans.labels_)
     
-    # Calculate silhouette scores for each sample
     sample_silhouette_values = silhouette_samples(X_scaled, kmeans.labels_)
     
-    # Detailed silhouette analysis per cluster
     cluster_silhouette_scores = []
     for i in range(len(np.unique(kmeans.labels_))):
         cluster_values = sample_silhouette_values[kmeans.labels_ == i]
@@ -205,13 +186,10 @@ def evaluate_clustering(df, X_scaled, kmeans, features):
         }
         cluster_silhouette_scores.append(cluster_stats)
     
-    # Inertia (Within-cluster sum of squares)
     inertia = kmeans.inertia_
     
-    # Calculate total bencana untuk setiap provinsi
     df['Total Bencana'] = df[features].sum(axis=1)
     
-    # Hitung statistik per cluster
     cluster_stats = []
     for i in range(len(np.unique(kmeans.labels_))):
         cluster_data = df[df['cluster'] == i]
@@ -225,18 +203,15 @@ def evaluate_clustering(df, X_scaled, kmeans, features):
             'Std Silhouette': cluster_silhouette_scores[i]['std_score']
         }
         
-        # Add feature means for each cluster
         for feature in features:
             stats[f'Mean_{feature}'] = cluster_data[feature].mean()
         
         cluster_stats.append(stats)
     
-    # Create visualization for silhouette analysis
     def plot_silhouette_analysis():
         fig = make_subplots(rows=1, cols=2,
                            subplot_titles=('Silhouette Plot', 'Cluster Sizes'))
         
-        # Silhouette plot
         y_lower = 10
         for i in range(len(np.unique(kmeans.labels_))):
             cluster_silhouette_vals = sample_silhouette_values[kmeans.labels_ == i]
@@ -254,11 +229,9 @@ def evaluate_clustering(df, X_scaled, kmeans, features):
             )
             y_lower = y_upper + 10
         
-        # Add vertical line for average silhouette score
         fig.add_vline(x=silhouette_avg, line_dash="dash", 
                      line_color="red", row=1, col=1)
         
-        # Cluster sizes bar plot
         cluster_sizes = [stats['size'] for stats in cluster_silhouette_scores]
         fig.add_trace(
             go.Bar(x=[f'Cluster {i}' for i in range(len(cluster_sizes))],
@@ -275,7 +248,6 @@ def evaluate_clustering(df, X_scaled, kmeans, features):
         
         return fig
     
-    # Create visualization for feature importance in clusters
     def plot_feature_importance():
         feature_importance = pd.DataFrame(columns=['Feature', 'Cluster', 'Mean Value'])
         
@@ -308,31 +280,25 @@ def evaluate_clustering(df, X_scaled, kmeans, features):
     
     return evaluation_results
 
-# Tambahkan fungsi untuk membuat peta
 def create_indonesia_map(df, selected_disaster, features):
     """
     Membuat peta choropleth Indonesia
     """
-    # Koordinat center Indonesia
     center_lat = -2.5489
     center_long = 118.0149
     
-    # Buat peta dasar
     m = folium.Map(location=[center_lat, center_long], 
                    zoom_start=4,
                    tiles='CartoDB positron',
                    width='100%',
                    height='600px')
     
-    # Tambahkan marker untuk setiap provinsi
     for idx, row in df.iterrows():
-        province_coords = PROVINCE_COORDINATES.get(row['Provinsi'])  # Ubah 'provinsi' menjadi 'Provinsi'
+        province_coords = PROVINCE_COORDINATES.get(row['Provinsi'])
         if province_coords:
-            # Hitung ukuran marker berdasarkan jumlah kejadian
             value = row[selected_disaster]
             radius = 10 + (value * 2) if value > 0 else 10
             
-            # Buat popup info
             popup_text = f"""
             <div style='width: 200px'>
                 <h4>{row['Provinsi']}</h4>
@@ -344,10 +310,8 @@ def create_indonesia_map(df, selected_disaster, features):
             </div>
             """
             
-            # Tentukan warna berdasarkan nilai relatif terhadap rata-rata
             color = 'red' if value > df[selected_disaster].mean() else 'blue'
             
-            # Tambahkan marker
             folium.CircleMarker(
                 location=province_coords,
                 radius=radius,
@@ -357,7 +321,6 @@ def create_indonesia_map(df, selected_disaster, features):
                 fill_opacity=0.7
             ).add_to(m)
             
-            # Tambahkan marker animasi jika ada kejadian
             if value > 0:
                 folium.CircleMarker(
                     location=province_coords,
@@ -369,7 +332,6 @@ def create_indonesia_map(df, selected_disaster, features):
                     className='marker-pulse'
                 ).add_to(m)
     
-    # Tambahkan custom CSS untuk animasi
     custom_css = """
     <style>
     .marker-pulse {
@@ -396,7 +358,6 @@ def create_indonesia_map(df, selected_disaster, features):
     
     return m
 
-# Dictionary koordinat provinsi Indonesia
 PROVINCE_COORDINATES = {
     'Aceh': [4.6951, 96.7494],
     'Sumatera Utara': [2.1154, 99.5451],
@@ -443,11 +404,9 @@ def main():
     5. Evaluation
     6. Deployment
     """
-    # Inisialisasi session state
     if 'current_page' not in st.session_state:
         st.session_state.current_page = 'business_understanding'
     
-    # Set page layout to wide mode
     st.set_page_config(
         page_title="Analisis Bencana Alam Indonesia",
         page_icon="🌍",
@@ -455,10 +414,8 @@ def main():
         initial_sidebar_state="collapsed"
     )
 
-    # Add title with name and student ID
     st.title("Analisis dan Pengelompokan Pola Bencana Alam di Indonesia Menggunakan Metode K-Means Clustering")
     
-    # Add author info and social media links with custom styling
     st.markdown("""
     <div style='
         text-align: left; 
@@ -554,12 +511,10 @@ def main():
     </div>
     """, unsafe_allow_html=True)
 
-    # Add Font Awesome for social media icons
     st.markdown("""
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     """, unsafe_allow_html=True)
 
-    # Custom CSS untuk menu navigasi
     st.markdown("""
     <style>
     .header-style {
@@ -592,7 +547,6 @@ def main():
     </style>
     """, unsafe_allow_html=True)
 
-    # Horizontal menu using columns with adjusted width
     col1, col2, col3, col4, col5, col6 = st.columns([1,1,1,1,1,1])
     with col1:
         if st.button("📋 Business\nUnderstanding"):
@@ -615,12 +569,10 @@ def main():
     
     st.write("---")
 
-    # Get and prepare data
     data = get_data_from_api()
     df = prepare_data(data)
     df_clustered, optimal_k, features = perform_clustering(df)
     
-    # Perform clustering and get evaluation metrics
     X = df[features].values
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
@@ -630,7 +582,6 @@ def main():
     
     evaluation_results = evaluate_clustering(df, X_scaled, kmeans, features)
 
-    # Display content based on selected page
     if st.session_state.current_page == 'business_understanding':
         st.header("Business Understanding")
         st.write("""
@@ -682,27 +633,22 @@ def main():
     elif st.session_state.current_page == 'data_understanding':
         st.header("Data Understanding")
         
-        # Tampilkan data mentah dari API
         st.write("""
         ### 📊 Data Mentah dari API BPS
         Data ini merupakan data asli yang diperoleh dari API BPS tanpa preprocessing.
         """)
         
-        # Pilih tahun untuk ditampilkan
         selected_year = st.selectbox(
             "Pilih Tahun:",
             sorted(df['Tahun'].unique()),
             key='year_selector'
         )
         
-        # Filter data berdasarkan tahun
         df_year = df[df['Tahun'] == selected_year]
         
-        # Tampilkan data untuk tahun yang dipilih
         st.write(f"#### Data Tahun {selected_year}")
         st.dataframe(df_year, use_container_width=True)
         
-        # Tampilkan ringkasan statistik per tahun
         st.write("### 📈 Ringkasan Statistik per Tahun")
         yearly_summary = df.groupby('Tahun').agg({
             'Gempa Bumi': 'sum',
@@ -719,17 +665,14 @@ def main():
         
         st.dataframe(yearly_summary, use_container_width=True)
         
-        # Visualisasi tren tahunan
         st.write("### 📊 Tren Bencana per Tahun")
         
-        # Melting data untuk visualisasi
         yearly_data_melted = yearly_summary.reset_index().melt(
             id_vars=['Tahun'],
             var_name='Jenis Bencana',
             value_name='Jumlah Kejadian'
         )
         
-        # Plot tren
         fig = px.line(
             yearly_data_melted,
             x='Tahun',
@@ -745,7 +688,6 @@ def main():
         )
         st.plotly_chart(fig, use_container_width=True)
         
-        # Tampilkan informasi dataset
         st.write("""
         ### 📋 Informasi Dataset
         - **Sumber Data**: Badan Pusat Statistik (BPS)
@@ -763,14 +705,12 @@ def main():
     elif st.session_state.current_page == 'data_preparation':
         st.header("Data Preparation")
         
-        # Tambahkan filter tahun
         selected_year = st.selectbox(
             "Pilih Tahun:",
             sorted(df['Tahun'].unique()),
             key='prep_year_selector'
         )
         
-        # Filter data berdasarkan tahun
         df_year = df[df['Tahun'] == selected_year]
         
         st.write(f"### 🔄 Proses Persiapan Data Tahun {selected_year}")
@@ -791,15 +731,12 @@ def main():
            - Skala data sudah dinormalisasi
         """)
         
-        # Tampilkan data setelah preprocessing untuk tahun terpilih
         st.write(f"### 📊 Data Setelah Preprocessing - Tahun {selected_year}")
         st.dataframe(df_year, use_container_width=True)
         
-        # Tampilkan statistik deskriptif untuk tahun terpilih
         st.write(f"### 📈 Statistik Deskriptif - Tahun {selected_year}")
         st.dataframe(df_year[features].describe(), use_container_width=True)
         
-        # Visualisasi distribusi data untuk tahun terpilih
         st.write(f"### 📊 Distribusi Data per Jenis Bencana - Tahun {selected_year}")
         fig = px.box(
             df_year.melt(id_vars=['Provinsi'], value_vars=features),
@@ -812,17 +749,14 @@ def main():
     elif st.session_state.current_page == 'modeling':
         st.header("Modeling - K-Means Clustering")
         
-        # Tambahkan filter tahun
         selected_year = st.selectbox(
             "Pilih Tahun:",
             sorted(df['Tahun'].unique()),
             key='model_year_selector'
         )
         
-        # Filter data berdasarkan tahun
         df_year = df[df['Tahun'] == selected_year]
         
-        # Lakukan clustering untuk data tahun terpilih
         df_clustered_year, optimal_k_year, _ = perform_clustering(df_year)
         X_year = df_year[features].values
         X_scaled_year = scaler.fit_transform(X_year)
@@ -836,7 +770,6 @@ def main():
         - **Inertia**: {kmeans_year.inertia_:.2f}
         """)
         
-        # Tampilkan karakteristik setiap cluster
         for i in range(optimal_k_year):
             cluster_data = df_year[df_year['cluster'] == i]
             st.write(f"""
@@ -849,27 +782,22 @@ def main():
     elif st.session_state.current_page == 'evaluation':
         st.header("Evaluation")
         
-        # Tambahkan filter tahun
         selected_year = st.selectbox(
             "Pilih Tahun:",
             sorted(df['Tahun'].unique()),
             key='eval_year_selector'
         )
         
-        # Filter data berdasarkan tahun
         df_year = df[df['Tahun'] == selected_year]
         
-        # Lakukan clustering untuk data tahun terpilih
         df_clustered_year, optimal_k_year, _ = perform_clustering(df_year)
         X_year = df_year[features].values
         X_scaled_year = scaler.fit_transform(X_year)
         kmeans_year = KMeans(n_clusters=optimal_k_year, random_state=42)
         kmeans_year.fit(X_scaled_year)
         
-        # Get evaluation results
         evaluation_results = evaluate_clustering(df_year, X_scaled_year, kmeans_year, features)
         
-        # Display overall metrics
         col1, col2 = st.columns(2)
         with col1:
             st.metric("Overall Silhouette Score", 
@@ -878,23 +806,18 @@ def main():
             st.metric("Inertia", 
                      f"{evaluation_results['inertia']:.2f}")
         
-        # Display silhouette analysis plot
         st.plotly_chart(evaluation_results['silhouette_analysis'],
                        use_container_width=True)
         
-        # Display cluster statistics
         st.subheader("Cluster Statistics")
         st.dataframe(evaluation_results['cluster_stats'])
         
-        # Display feature importance plot
         st.plotly_chart(evaluation_results['feature_importance'],
                        use_container_width=True)
         
-        # Display detailed silhouette scores
         st.subheader("Detailed Silhouette Scores per Cluster")
         st.dataframe(evaluation_results['cluster_silhouette_scores'])
         
-        # Add interpretation
         st.write("""
         ### Interpretasi Hasil:
         1. **Silhouette Score** mengukur seberapa mirip objek dengan clusternya sendiri 
@@ -913,24 +836,20 @@ def main():
     elif st.session_state.current_page == 'deployment':
         st.header("Deployment - Dashboard Analisis Bencana")
         
-        # Tambahkan filter tahun
         selected_year = st.selectbox(
             "Pilih Tahun:",
             sorted(df['Tahun'].unique()),
             key='deploy_year_selector'
         )
         
-        # Filter data berdasarkan tahun
         df_year = df[df['Tahun'] == selected_year]
         
-        # Lakukan clustering untuk data tahun terpilih
         df_clustered_year, optimal_k_year, _ = perform_clustering(df_year)
         X_year = df_year[features].values
         X_scaled_year = scaler.fit_transform(X_year)
         kmeans_year = KMeans(n_clusters=optimal_k_year, random_state=42)
         kmeans_year.fit(X_scaled_year)
         
-        # Hitung evaluasi metrics untuk tahun terpilih
         evaluation_results = evaluate_clustering(df_year, X_scaled_year, kmeans_year, features)
         
         viz_type = st.radio(
@@ -941,7 +860,6 @@ def main():
         if viz_type == "📊 Analisis Cluster":
             st.subheader(f"Analisis Pengelompokan Provinsi - Tahun {selected_year}")
             
-            # Display overall metrics
             col1, col2 = st.columns(2)
             with col1:
                 st.metric("Overall Silhouette Score", 
@@ -950,33 +868,27 @@ def main():
                 st.metric("Inertia", 
                          f"{evaluation_results['inertia']:.2f}")
             
-            # Display silhouette analysis plot
             st.plotly_chart(evaluation_results['silhouette_analysis'],
                            use_container_width=True)
             
-            # Display cluster statistics
             st.subheader("Cluster Statistics")
             st.dataframe(evaluation_results['cluster_stats'])
             
-            # Display feature importance plot
             st.plotly_chart(evaluation_results['feature_importance'],
                            use_container_width=True)
             
         elif viz_type == "🌍 Peta Persebaran":
             st.subheader(f"Peta Persebaran Bencana - Tahun {selected_year}")
             
-            # Pilih jenis bencana
             selected_disaster = st.selectbox(
                 "Pilih Jenis Bencana:",
                 features,
                 format_func=lambda x: x.replace('_', ' ').title()
             )
             
-            # Buat dan tampilkan peta
             m = create_indonesia_map(df_year, selected_disaster, features)
             folium_static(m, width=1300, height=600)
             
-            # Tambahkan legenda
             st.markdown("""
             ### Legenda:
             - 🔴 **Merah**: Kejadian di atas rata-rata
@@ -988,7 +900,6 @@ def main():
         elif viz_type == "📈 Analisis Tren":
             st.subheader(f"Analisis Tren Bencana - Tahun {selected_year}")
             
-            # Visualisasi distribusi bencana
             fig = px.bar(
                 df_year.melt(id_vars=['Provinsi'], value_vars=features),
                 x='variable',
@@ -998,7 +909,6 @@ def main():
             )
             st.plotly_chart(fig, use_container_width=True)
             
-            # Heatmap korelasi
             corr_matrix = df_year[features].corr()
             fig = px.imshow(
                 corr_matrix,
@@ -1011,7 +921,6 @@ def main():
         elif viz_type == "🔍 Insight Detail":
             st.subheader(f"Detail Insight per Cluster - Tahun {selected_year}")
             
-            # Analisis per cluster
             for cluster_num in range(optimal_k_year):
                 st.write(f"### Cluster {cluster_num}")
                 cluster_data = df_year[df_year['cluster'] == cluster_num]
@@ -1024,7 +933,6 @@ def main():
                     st.write(", ".join(cluster_data['Provinsi'].tolist()))
                 
                 with col2:
-                    # Radar chart karakteristik cluster
                     fig = go.Figure()
                     fig.add_trace(go.Scatterpolar(
                         r=cluster_data[features].mean(),
@@ -1044,7 +952,6 @@ def main():
         elif viz_type == "📑 Kesimpulan & Hasil Model":
             st.subheader(f"Kesimpulan Analisis Clustering Tahun {selected_year}")
             
-            # Tampilkan metrik model
             col1, col2, col3 = st.columns(3)
             with col1:
                 st.metric("Jumlah Cluster Optimal", 
@@ -1056,7 +963,6 @@ def main():
                 st.metric("Inertia", 
                          f"{evaluation_results['inertia']:.2f}")
             
-            # Analisis kualitas cluster
             st.write("### 📊 Kualitas Clustering")
             quality_score = evaluation_results['silhouette_avg']
             if quality_score > 0.5:
@@ -1071,14 +977,12 @@ def main():
             
             st.info(f"Kualitas Model: **{quality_text}**\n\n{explanation}")
             
-            # Karakteristik tiap cluster
             st.write("### 🎯 Karakteristik Cluster")
             cluster_stats = evaluation_results['cluster_stats']
             
             for i in range(optimal_k_year):
                 cluster_data = cluster_stats[cluster_stats['Cluster'] == i]
                 
-                # Hitung bencana dominan
                 feature_means = {feat: cluster_data[f'Mean_{feat}'].values[0] 
                                for feat in features}
                 dominant_disasters = sorted(feature_means.items(), 
@@ -1099,15 +1003,12 @@ def main():
                         for disaster, value in dominant_disasters:
                             st.write(f"- {disaster}: {value:.2f}")
                 
-                # Tampilkan provinsi dalam cluster
                 provinces = df_year[df_year['cluster'] == i]['Provinsi'].tolist()
                 st.write("#### Provinsi dalam Cluster:")
                 st.write(", ".join(provinces))
             
-            # Rekomendasi berdasarkan hasil clustering
             st.write("### 🎯 Rekomendasi Tindakan")
             
-            # Generate rekomendasi berdasarkan karakteristik cluster
             for i in range(optimal_k_year):
                 cluster_data = cluster_stats[cluster_stats['Cluster'] == i]
                 feature_means = {feat: cluster_data[f'Mean_{feat}'].values[0] 
@@ -1116,7 +1017,6 @@ def main():
                 
                 st.write(f"#### Cluster {i}:")
                 
-                # Rekomendasi berdasarkan jenis bencana dominan
                 if "Gempa" in dominant_disaster:
                     st.write("""
                     - Perkuat infrastruktur tahan gempa
@@ -1142,7 +1042,6 @@ def main():
                     - Koordinasi dengan BMKG setempat
                     """)
             
-            # Kesimpulan akhir
             st.write("### 📝 Kesimpulan Akhir")
             st.write(f"""
             Berdasarkan analisis clustering untuk tahun {selected_year}, dapat disimpulkan:

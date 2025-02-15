@@ -1,15 +1,15 @@
-# Sistem Analisis Clustering Ekspor Hasil Pertanian Indonesia
+# Analisis dan Pengelompokan Pola Bencana Alam di Indonesia Menggunakan Metode K-Means Clustering
 
 ## 📋 Deskripsi
-Aplikasi berbasis web untuk menganalisis pola dan karakteristik ekspor hasil pertanian Indonesia menggunakan metode clustering. 
-Menggunakan data historis dari BPS (Badan Pusat Statistik) dan teknik machine learning untuk mengidentifikasi kelompok komoditas dengan karakteristik serupa.
+Aplikasi berbasis web untuk menganalisis pola dan karakteristik bencana alam di Indonesia menggunakan metode clustering. 
+Menggunakan data historis dari BPS (Badan Pusat Statistik) dan teknik machine learning untuk mengidentifikasi kelompok provinsi dengan karakteristik kebencanaan yang serupa.
 
 ## 🚀 Fitur Utama
-- Visualisasi data historis ekspor pertanian
-- Analisis clustering komoditas ekspor
-- Visualisasi interaktif cluster (2D dan 3D)
+- Visualisasi data historis bencana alam
+- Analisis clustering provinsi berdasarkan pola bencana
+- Peta interaktif persebaran bencana
 - Perbandingan karakteristik antar cluster
-- Rekomendasi berdasarkan karakteristik cluster
+- Rekomendasi mitigasi berdasarkan karakteristik cluster
 - Tampilan interaktif dengan Streamlit
 
 ## 💻 Teknologi yang Digunakan
@@ -19,56 +19,58 @@ Menggunakan data historis dari BPS (Badan Pusat Statistik) dan teknik machine le
 - Pandas
 - NumPy
 - Plotly
+- Folium
 - Requests
 
 ## 📊 Materi Presentasi
 
 ### 1. Pendahuluan
-- Latar Belakang: Pentingnya analisis ekspor pertanian
-- Tujuan: Identifikasi pola dan karakteristik ekspor
-- Manfaat: Pengambilan keputusan berbasis data
+- Latar Belakang: Indonesia sebagai negara rawan bencana
+- Tujuan: Identifikasi pola dan karakteristik bencana
+- Manfaat: Peningkatan kesiapsiagaan dan mitigasi bencana
 
 ### 2. Metodologi
 #### A. Data
 - Sumber: API BPS
-- Periode: Data historis ekspor pertanian
-- Variabel: Nilai ekspor bulanan per komoditas
+- Periode: 2018-2024
+- Variabel: Jumlah kejadian per jenis bencana
 
 #### B. Teknik Analisis
 - Metode: K-Means Clustering
 - Karakteristik yang dianalisis:
-  * Rata-rata nilai ekspor
-  * Volatilitas (standar deviasi)
-  * Tren pertumbuhan
-  * Nilai maksimum dan minimum
+  * Frekuensi kejadian bencana
+  * Jenis bencana dominan
+  * Pola spasial
+  * Tren temporal
 
 #### C. Visualisasi
-- Plot Cluster 2D dan 3D
-- Box Plot karakteristik
-- Analisis perbandingan
+- Peta interaktif persebaran bencana
+- Analisis cluster
+- Tren temporal
+- Insight detail per cluster
 
 ### 3. Hasil Analisis
 #### A. Pembentukan Cluster
 - Jumlah optimal cluster
 - Karakteristik tiap cluster
-- Distribusi komoditas
+- Distribusi provinsi
 
 #### B. Interpretasi
-- Pola ekspor per cluster
-- Tren dan volatilitas
-- Potensi pengembangan
+- Pola kebencanaan per cluster
+- Tren temporal
+- Korelasi antar jenis bencana
 
 #### C. Rekomendasi
-- Strategi per cluster
+- Strategi mitigasi per cluster
 - Manajemen risiko
-- Pengembangan pasar
+- Peningkatan kesiapsiagaan
 
 ## 📦 Cara Instalasi
 
 ### 1. Clone Repository
 ```bash
-git clone [URL_REPOSITORY_ANDA]
-cd [NAMA_FOLDER_PROJECT]
+git clone https://github.com/ridwanmubarok/bps-e-analytic
+cd bps-e-analytic
 ```
 
 ### 2. Install Dependencies
@@ -83,43 +85,57 @@ streamlit run main.py
 
 ## 📊 Struktur Data
 Data yang digunakan mencakup:
-- Nilai ekspor bulanan per komoditas
+- Jumlah kejadian per jenis bencana
 - Karakteristik yang diekstrak:
-  * Rata-rata ekspor
-  * Volatilitas
-  * Tren pertumbuhan
-  * Nilai ekstrem
+  * Frekuensi kejadian
+  * Jenis bencana dominan
+  * Pola spasial
+  * Tren temporal
 
 ## 📈 Metodologi
 ### 1. K-Means Clustering
 - Algoritma pengelompokan unsupervised
-- Mengelompokkan komoditas berdasarkan karakteristik serupa
-- Optimasi dengan metode elbow dan silhouette score
+- Mengelompokkan provinsi berdasarkan karakteristik bencana
+- Optimasi dengan silhouette score
 
 ### 2. Fitur yang Dianalisis
-- Rata-rata nilai ekspor: mengukur skala ekspor
-- Volatilitas: mengukur stabilitas
-- Tren pertumbuhan: mengukur perkembangan
-- Nilai maksimum/minimum: mengukur rentang nilai
+- Frekuensi kejadian: mengukur intensitas bencana
+- Jenis bencana: mengidentifikasi karakteristik wilayah
+- Pola spasial: menganalisis distribusi geografis
+- Tren temporal: mengukur perubahan pola
 
 ### 3. Visualisasi
-- Plot interaktif 2D/3D
-- Box plot karakteristik
-- Analisis komparatif
+- Peta interaktif
+- Analisis cluster
+- Tren temporal
+- Detail insight
 
 ## 📱 Tampilan Aplikasi
-Aplikasi terdiri dari 3 tab utama:
-1. Analisis Cluster
-   - Visualisasi cluster
-   - Pengaturan parameter
-   - Detail karakteristik
-2. Perbandingan Karakteristik
-   - Analisis komparatif
-   - Distribusi nilai
-3. Rekomendasi
-   - Strategi per cluster
-   - Manajemen risiko
-   - Pengembangan pasar
+Aplikasi terdiri dari 6 tab utama:
+1. Business Understanding
+   - Latar belakang
+   - Tujuan
+   - Manfaat
+2. Data Understanding
+   - Sumber data
+   - Struktur data
+   - Statistik deskriptif
+3. Data Preparation
+   - Pembersihan data
+   - Transformasi
+   - Normalisasi
+4. Modeling
+   - Proses clustering
+   - Parameter optimal
+   - Hasil pengelompokan
+5. Evaluation
+   - Metrik evaluasi
+   - Analisis cluster
+   - Interpretasi hasil
+6. Deployment
+   - Visualisasi interaktif
+   - Insight detail
+   - Rekomendasi tindakan
 
 ## ⚙️ Requirements
 ```
@@ -129,6 +145,8 @@ numpy>=1.24.0
 scikit-learn>=1.2.0
 requests>=2.31.0
 plotly>=5.18.0
+folium>=0.14.0
+streamlit-folium>=0.15.0
 ```
 
 ## 🤝 Kontribusi
@@ -139,6 +157,13 @@ Silakan berkontribusi dengan:
 4. Push ke branch (`git push origin fitur-baru`)
 5. Buat Pull Request
 
+## 👨‍💻 Developer
+Ridwan Mubarok (230401010053)
+- Website: [amubhya.com](https://amubhya.com)
+- LinkedIn: [Ridwan Mubarok](https://www.linkedin.com/in/ridwan-mubarok/)
+- GitHub: [ridwanmubarok](https://github.com/ridwanmubarok)
+- Instagram: [@amubhya](https://www.instagram.com/amubhya/)
+
 ## 🙏 Ucapan Terima Kasih
 - Badan Pusat Statistik (BPS) untuk penyediaan data
 - Streamlit untuk framework visualisasi
@@ -147,12 +172,12 @@ Silakan berkontribusi dengan:
 ## 📚 Teori dan Metodologi
 
 ### 1. K-Means Clustering
-Algoritma clustering yang mengelompokkan data berdasarkan kesamaan karakteristik.
+Algoritma clustering yang mengelompokkan provinsi berdasarkan kesamaan karakteristik bencana.
 
 #### Prinsip Dasar:
 ```
 1. Inisialisasi k centroid secara acak
-2. Assign setiap data ke centroid terdekat
+2. Assign setiap provinsi ke centroid terdekat
 3. Update posisi centroid
 4. Ulangi langkah 2-3 hingga konvergen
 ```
@@ -171,38 +196,38 @@ Dimana:
 #### 2. Karakteristik Cluster
 - Kohesi internal
 - Separasi antar cluster
-- Distribusi anggota
+- Distribusi provinsi
 
 ### 3. Analisis Karakteristik
 
-#### 1. Rata-rata Ekspor
-- Mengukur skala operasi
-- Indikator kapasitas ekspor
-- Benchmark antar komoditas
+#### 1. Frekuensi Bencana
+- Mengukur intensitas
+- Indikator kerawanan
+- Basis mitigasi
 
-#### 2. Volatilitas
-- Mengukur stabilitas
-- Indikator risiko
-- Basis manajemen risiko
+#### 2. Jenis Bencana
+- Karakteristik wilayah
+- Pola kejadian
+- Fokus penanganan
 
-#### 3. Tren Pertumbuhan
-- Arah perkembangan
-- Potensi masa depan
-- Dasar strategi pengembangan
+#### 3. Pola Spasial
+- Distribusi geografis
+- Korelasi wilayah
+- Zonasi risiko
 
 ### 4. Implikasi untuk Kebijakan
 
-#### 1. Strategi Pengembangan
+#### 1. Strategi Mitigasi
 - Fokus per cluster
 - Alokasi sumber daya
-- Target pengembangan
+- Prioritas penanganan
 
 #### 2. Manajemen Risiko
 - Identifikasi risiko per cluster
 - Strategi mitigasi
-- Monitoring dan evaluasi
+- Sistem peringatan dini
 
-#### 3. Pengembangan Pasar
-- Target pasar per cluster
-- Strategi penetrasi
-- Diversifikasi tujuan ekspor
+#### 3. Kesiapsiagaan
+- Perencanaan evakuasi
+- Penguatan infrastruktur
+- Edukasi masyarakat
