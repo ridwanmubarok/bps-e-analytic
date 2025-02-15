@@ -1,386 +1,281 @@
-# Analisis dan Pengelompokan Pola Ekspor Hasil Pertanian Indonesia Menggunakan Metode K-Means Clustering
-
-**Identitas:**
-- Nama: Ridwan Mubarok
-- NIM: 230401010053
-- Mata Kuliah: Data Mining
-- Program Studi: Teknik Informatika
-- Universitas: Universitas Siber Asia
-
-## Slide 1: Pendahuluan
-
-### Judul Penelitian
-"Analisis dan Pengelompokan Pola Ekspor Hasil Pertanian Indonesia Menggunakan Metode K-Means Clustering"
-
-### Identitas Peneliti
-- Nama: Ridwan Mubarok
-- NIM: 230401010053
-- Mata Kuliah: Data Mining
-- Program Studi: Teknik Informatika
-- Universitas: Universitas Siber Asia
-
-### Latar Belakang Singkat
-Sektor pertanian merupakan salah satu pilar utama perekonomian Indonesia, dengan kontribusi signifikan terhadap ekspor nasional. Dalam upaya mengoptimalkan strategi pengembangan ekspor pertanian, diperlukan pemahaman mendalam tentang pola dan karakteristik ekspor setiap komoditas. Analisis clustering menggunakan metode K-Means dapat membantu mengidentifikasi kelompok-kelompok komoditas dengan karakteristik serupa, yang dapat menjadi dasar pengambilan kebijakan yang lebih terarah.
-
-### Metodologi
-Penelitian ini menggunakan pendekatan CRISP-DM (Cross-Industry Standard Process for Data Mining) dengan tahapan:
-1. Business Understanding: Memahami tujuan dan kebutuhan analisis
-2. Data Understanding: Eksplorasi data ekspor dari BPS
-3. Data Preparation: Penyiapan dan transformasi data
-4. Modeling: Implementasi K-Means Clustering
-5. Evaluation: Pengujian dan validasi hasil
-6. Deployment: Implementasi sistem analisis
-
-### Ruang Lingkup
-- Data: Nilai ekspor hasil pertanian Indonesia
-- Periode: 2022-2024
-- Sumber: API Badan Pusat Statistik (BPS)
-- Metode: K-Means Clustering
-- Tools: Python, Streamlit, Scikit-learn
-
-### Manfaat Penelitian
-1. **Bagi Pemerintah:**
-   - Dasar pengambilan kebijakan pengembangan ekspor
-   - Identifikasi komoditas unggulan dan potensial
-   - Strategi peningkatan daya saing ekspor
-
-2. **Bagi Pelaku Usaha:**
-   - Pemahaman karakteristik pasar ekspor
-   - Identifikasi peluang pengembangan
-   - Strategi pengelolaan risiko
-
-3. **Bagi Akademisi:**
-   - Kontribusi metodologi analisis data ekspor
-   - Referensi penelitian terkait
-   - Pengembangan model analisis serupa
-
-## Slide 2-4: Business Understanding
-
-### Slide 2: Latar Belakang
-**A. Kondisi Saat Ini**
-- Indonesia memiliki potensi besar dalam ekspor hasil pertanian
-- Data ekspor pertanian tersedia namun belum dimanfaatkan optimal
-- Perlu analisis mendalam untuk pengambilan keputusan
-
-**B. Permasalahan yang Ada**
-- Belum ada pengelompokan komoditas berdasarkan karakteristik
-- Sulit mengidentifikasi pola ekspor tiap komoditas
-- Kebijakan pengembangan belum berdasarkan analisis data
-
-**C. Peluang Pengembangan**
-- Tersedianya data ekspor dari BPS
-- Metode clustering dapat membantu pengelompokan
-- Teknologi memungkinkan analisis data yang lebih baik
-
-### Slide 3: Permasalahan
-**A. Masalah Utama**
-1. Identifikasi Pola:
-   - Bagaimana pola ekspor setiap komoditas?
-   - Apakah ada tren tertentu dalam ekspor?
-   - Bagaimana volatilitas nilai ekspor?
-
-2. Pengelompokan:
-   - Bagaimana mengelompokkan komoditas serupa?
-   - Apa karakteristik setiap kelompok?
-   - Berapa jumlah kelompok yang optimal?
-
-3. Pengembangan:
-   - Strategi apa yang sesuai untuk tiap kelompok?
-   - Bagaimana meningkatkan performa ekspor?
-   - Apa rekomendasi untuk setiap kelompok?
-
-### Slide 4: Tujuan
-**A. Tujuan Umum**
-- Mengembangkan sistem analisis ekspor hasil pertanian
-- Memberikan dasar pengambilan keputusan berbasis data
-- Meningkatkan efektivitas strategi pengembangan ekspor
-
-**B. Tujuan Khusus**
-1. Analisis Data:
-   - Mengidentifikasi pola ekspor setiap komoditas
-   - Menghitung karakteristik statistik ekspor
-   - Menganalisis tren dan volatilitas
-
-2. Pengelompokan:
-   - Menerapkan K-Means Clustering
-   - Menentukan jumlah cluster optimal
-   - Menganalisis karakteristik setiap cluster
-
-3. Rekomendasi:
-   - Menyusun strategi per kelompok
-   - Memberikan rekomendasi pengembangan
-   - Mengidentifikasi peluang peningkatan
-
-**C. Target Pencapaian**
-1. Sistem Analisis:
-   - Aplikasi web interaktif
-   - Visualisasi hasil clustering
-   - Dashboard analisis ekspor
-
-2. Hasil Analisis:
-   - Pola ekspor teridentifikasi
-   - Kelompok komoditas terbentuk
-   - Rekomendasi tersusun
-
-3. Dokumentasi:
-   - Laporan analisis lengkap
-   - Panduan penggunaan sistem
-   - Rekomendasi tindak lanjut
-
-## Slide 5-8: Data Understanding
-
-### Slide 5: Sumber dan Pengumpulan Data
-**A. Sumber Data Utama**
-- Data bersumber dari API resmi Badan Pusat Statistik (BPS) Indonesia
-- Mencakup periode tahun 2022 hingga 2024 (data terkini)
-- Fokus pada nilai ekspor bulanan untuk setiap komoditas pertanian
-
-**B. Proses Pengambilan Data**
-```python
-def get_data_from_api():
-    """
-    Mengambil data ekspor dari API BPS dengan tahapan:
-    1. Koneksi ke endpoint API
-    2. Autentikasi dengan API key
-    3. Pengambilan data dalam format JSON
-    """
-    url = "https://webapi.bps.go.id/v1/api/list/..."
-    response = requests.get(url)
-    return response.json()
-```
-
-**C. Karakteristik Data**
-- Data time series bulanan
-- Nilai dalam satuan ribu USD
-- Mencakup berbagai komoditas pertanian
-
-### Slide 6: Struktur dan Organisasi Data
-**A. Format Data**
-- Data dalam struktur JSON terorganisir
-- Hierarki data yang terstruktur dan sistematis
-- Kemudahan dalam pengolahan dan analisis
-
-**B. Komponen Data Utama**
-1. Informasi Komoditas (vervar):
-   - Kode komoditas
-   - Nama komoditas
-   - Kategori produk
-
-2. Informasi Waktu:
-   - Tahun ekspor
-   - Bulan ekspor
-   - Periode pelaporan
-
-3. Nilai Ekspor (datacontent):
-   - Nilai ekspor bulanan
-   - Historical data
-   - Trend perubahan
-
-### Slide 7: Eksplorasi dan Analisis Awal
-**A. Analisis Statistik Deskriptif**
-1. Ukuran Data:
-   - Jumlah total komoditas yang dianalisis
-   - Periode waktu yang tercakup
-   - Kelengkapan data per periode
-
-2. Distribusi Nilai:
-   - Rentang nilai ekspor
-   - Rata-rata dan median
-   - Standar deviasi
-
-**B. Visualisasi Data Awal**
-1. Tren Temporal:
-   - Grafik time series nilai ekspor
-   - Pola musiman jika ada
-   - Tren jangka panjang
-
-2. Distribusi:
-   - Histogram nilai ekspor
-   - Box plot per komoditas
-   - Scatter plot hubungan antar variabel
-
-### Slide 8: Analisis Kualitas Data
-**A. Identifikasi Missing Values**
-1. Analisis Kuantitatif:
-   - Jumlah data kosong
-   - Persentase missing values
-   - Pola kemunculan data kosong
-
-2. Strategi Penanganan:
-   - Metode imputasi yang sesuai
-   - Justifikasi penanganan missing values
-   - Impact analysis
-
-**B. Deteksi dan Analisis Outliers**
-1. Metodologi:
-   - Metode statistik (z-score, IQR)
-   - Visualisasi box plot
-   - Analisis kontekstual
-
-2. Penanganan Outliers:
-   - Verifikasi data ekstrem
-   - Strategi treatment
-   - Dokumentasi keputusan
-
-**C. Evaluasi Kualitas Data**
-1. Konsistensi:
-   - Format data
-   - Satuan pengukuran
-   - Penamaan variabel
-
-2. Validitas:
-   - Rentang nilai yang masuk akal
-   - Konsistensi temporal
-   - Kelengkapan informasi
-
-3. Kebutuhan Preprocessing:
-   - Standardisasi format
-   - Transformasi data
-   - Penanganan noise
-
-## Slide 9-12: Data Preparation
-
-### Slide 9: Preprocessing
-- Penanganan missing values
-- Standardisasi nilai
-- Transformasi data
-```python
-def process_numeric_data(df):
-    numeric_df = df.copy()
-    numeric_df[col] = pd.to_numeric(numeric_df[col].replace('-', np.nan))
-    return numeric_df
-```
-
-### Slide 10: Feature Engineering
-- Rata-rata ekspor: `mean_export = np.mean(monthly_values)`
-- Volatilitas: `std_export = np.std(monthly_values)`
-- Pertumbuhan: `growth = (nilai_akhir - nilai_awal) / nilai_awal`
-- Nilai maksimum dan minimum
-
-### Slide 11: Standardisasi
-```python
-scaler = StandardScaler()
-scaled_features = scaler.fit_transform(features)
-```
-- Tujuan: Menyamakan skala fitur
-- Metode: Z-score standardization
-- Rumus: z = (x - μ) / σ
-
-### Slide 12: Hasil Preparation
-- Matriks fitur final
-- Visualisasi data setelah preprocessing
-- Statistik deskriptif fitur
-
-## Slide 13-17: Modeling
-
-### Slide 13: K-Means Clustering
-- Pengertian K-Means
-- Kelebihan dan keterbatasan
-- Parameter yang digunakan
-
-### Slide 14: Algoritma K-Means
-1. Inisialisasi
-   - Pilih K pusat cluster
-   - Hitung jarak data ke pusat
-2. Iterasi
-   - Assignment: data → cluster terdekat
-   - Update: hitung ulang pusat cluster
-3. Konvergensi
-   - Kriteria berhenti
-   - Hasil final
-
-### Slide 15: Implementasi
-```python
-def perform_clustering(features, n_clusters):
-    scaler = StandardScaler()
-    scaled_features = scaler.fit_transform(features)
-    
-    kmeans = KMeans(n_clusters=n_clusters, random_state=42)
-    clusters = kmeans.fit_predict(scaled_features)
-    
-    silhouette_avg = silhouette_score(scaled_features, clusters)
-    return clusters, centers, silhouette_avg
-```
-
-### Slide 16: Visualisasi Cluster
-```python
-fig = px.scatter_3d(
-    cluster_df,
-    x='Rata-rata Ekspor',
-    y='Volatilitas',
-    z='Pertumbuhan',
-    color='Cluster',
-    title='Hasil Clustering'
-)
-```
-
-### Slide 17: Analisis Cluster
-- Karakteristik tiap cluster
-- Distribusi komoditas
-- Interpretasi hasil
-
-## Slide 18-20: Evaluation
-
-### Slide 18: Metrik Evaluasi
-1. Silhouette Score
-   - Rumus: s = (b - a) / max(a, b)
-   - Interpretasi nilai
-   - Hasil per jumlah cluster
-
-2. Inertia
-   - Within-cluster sum of squares
-   - Elbow method
-   - Optimal number of clusters
-
-### Slide 19: Validasi Hasil
-- Perbandingan antar jumlah cluster
-- Stabilitas cluster
-- Interpretabilitas hasil
-
-### Slide 20: Insight Bisnis
-- Karakteristik cluster
-- Implikasi kebijakan
-- Rekomendasi pengembangan
-
-## Slide 21-23: Deployment
-
-### Slide 21: Implementasi Sistem
-```python
-def main():
-    st.set_page_config(
-        page_title="Analisis Clustering Ekspor",
-        layout="wide"
-    )
-    
-    tab1, tab2, tab3, tab4 = st.tabs([
-        "Data Awal",
-        "Analisis Cluster",
-        "Perbandingan",
-        "Evaluasi"
-    ])
-```
-
-### Slide 22: Fitur Aplikasi
-1. Data Awal
-   - Visualisasi data mentah
-   - Statistik deskriptif
-2. Analisis Cluster
-   - Visualisasi interaktif
-   - Detail cluster
-3. Evaluasi
-   - Metrik performa
-   - Interpretasi hasil
-
-### Slide 23: Penggunaan Sistem
-- Cara mengakses
-- Interpretasi output
-- Manfaat sistem
-
-## Slide 24: Kesimpulan
-- Ringkasan temuan
-- Implikasi praktis
-- Saran pengembangan
-
-## Slide 25: Terima Kasih
-- Kontak
-- Referensi 
+# Analisis Clustering Kejadian Bencana Alam di Indonesia
+## Menggunakan Metodologi CRISP-DM
+
+### 🌏 Latar Belakang
+Indonesia, sebagai negara kepulauan terbesar di dunia yang terletak di "Ring of Fire" Pasifik, menghadapi tantangan besar dalam hal kebencanaan. Beberapa fakta penting:
+- 127 gunung api aktif
+- Terletak di pertemuan tiga lempeng tektonik utama
+- 60% wilayah daratan rawan banjir
+- 40% wilayah berpotensi longsor
+
+### 💡 Tujuan Proyek
+1. **Peningkatan Kesiapsiagaan**
+   - Identifikasi daerah rawan bencana
+   - Sistem peringatan dini
+   - Perencanaan evakuasi
+
+2. **Optimalisasi Sumber Daya**
+   - Alokasi anggaran efisien
+   - Distribusi logistik
+   - Penempatan tim tanggap darurat
+
+3. **Mitigasi Bencana**
+   - Strategi berbasis data
+   - Infrastruktur yang sesuai
+   - Edukasi masyarakat
+
+### 📊 Metodologi CRISP-DM
+1. **Business Understanding**
+   - Analisis kebutuhan stakeholder (BNPB, Pemerintah Daerah)
+   - Identifikasi masalah: pemetaan risiko bencana
+   - Penentuan success metrics: akurasi clustering dan interpretabilitas hasil
+   - Perencanaan proyek dan timeline
+
+2. **Data Understanding**
+   - Sumber Data: API BPS (https://webapi.bps.go.id/v1/api/interoperabilitas/)
+   - Periode: 2018-2024
+   - Variabel:
+     * 10 jenis bencana (features)
+     * 34 provinsi
+     * Data temporal per tahun
+   - Kualitas Data:
+     * Missing values ditandai dengan '–'
+     * Format data JSON bersarang
+     * Skala data bervariasi antar jenis bencana
+
+3. **Data Preparation**
+   - Pembersihan Data:
+     * Konversi missing values ('–') ke nilai 0
+     * Penghapusan data total Indonesia
+     * Standardisasi format numerik
+   - Transformasi:
+     * StandardScaler untuk normalisasi
+     ```python
+     scaler = StandardScaler()
+     X_scaled = scaler.fit_transform(X)
+     ```
+   - Feature Engineering:
+     * Perhitungan total bencana per provinsi
+     * Normalisasi fitur untuk clustering
+
+4. **Modeling - K-Means Clustering**
+   
+   **Teori K-Means:**
+   K-Means adalah algoritma clustering yang membagi n observasi ke dalam k cluster berdasarkan jarak ke centroid terdekat.
+   
+   **Algoritma:**
+   1. Inisialisasi k centroid secara acak
+   2. Iterasi sampai konvergen:
+      - Assign setiap titik ke centroid terdekat
+      - Update posisi centroid
+   
+   **Rumus:**
+   - Jarak Euclidean: d(x,y) = √(Σ(xi - yi)²)
+   - Centroid Update: μj = (1/|Cj|)Σxi∈Cj xi
+   - Inertia (WCSS): Σ(xi - μc(i))²
+   
+   **Implementasi:**
+   ```python
+   kmeans = KMeans(n_clusters=optimal_k, random_state=42)
+   df['cluster'] = kmeans.fit_predict(X_scaled)
+   ```
+   
+   **Optimasi Jumlah Cluster:**
+   - Silhouette Score untuk evaluasi kualitas cluster
+   - Range pengujian: 3-6 cluster
+   ```python
+   silhouette_scores = []
+   K = range(3, 7)
+   for k in K:
+       kmeans = KMeans(n_clusters=k, random_state=42)
+       score = silhouette_score(X_scaled, kmeans.labels_)
+       silhouette_scores.append(score)
+   ```
+
+5. **Evaluation**
+   
+   **Metrics & Implementation:**
+   1. Silhouette Score:
+      - Mengukur seberapa mirip objek dengan clusternya sendiri
+      - Range: [-1, 1], semakin tinggi semakin baik
+      - Rumus: (b - a) / max(a, b)
+        * a = jarak rata-rata ke titik dalam cluster yang sama
+        * b = jarak rata-rata ke titik di cluster terdekat lainnya
+      ```python
+      silhouette_avg = silhouette_score(X_scaled, kmeans.labels_)
+      ```
+
+   2. Inertia (Within-Cluster Sum of Squares):
+      - Mengukur seberapa dekat titik ke centroidnya
+      - Semakin kecil semakin baik
+      - Rumus: Σ(xi - μc(i))²
+      ```python
+      inertia = kmeans.inertia_
+      ```
+
+   **Analisis Cluster Detail:**
+   1. Statistik per Cluster:
+      ```python
+      cluster_stats = []
+      for i in range(len(np.unique(kmeans.labels_))):
+          cluster_data = df[df['cluster'] == i]
+          stats = {
+              'Cluster': i,
+              'Jumlah Provinsi': len(cluster_data),
+              'Rata-rata Total Bencana': cluster_data['Total Bencana'].mean(),
+              'Provinsi dengan Bencana Terbanyak': cluster_data.loc[cluster_data['Total Bencana'].idxmax(), 'Provinsi'],
+              'Max Total Bencana': cluster_data['Total Bencana'].max()
+          }
+          cluster_stats.append(stats)
+      ```
+
+   2. Visualisasi Evaluasi:
+      - Scatter Matrix Plot:
+        * Menampilkan hubungan antar variabel
+        * Pemisahan cluster secara visual
+        ```python
+        fig = px.scatter_matrix(
+            df_clustered, 
+            dimensions=features,
+            color='cluster'
+        )
+        ```
+      
+      - Radar Chart Karakteristik:
+        * Profil cluster berdasarkan jenis bencana
+        ```python
+        fig = go.Figure()
+        fig.add_trace(go.Scatterpolar(
+            r=cluster_data[features].mean(),
+            theta=features,
+            fill='toself'
+        ))
+        ```
+
+   3. Analisis Spasial:
+      - Peta Interaktif:
+        * Visualisasi distribusi cluster
+        * Marker dinamis dengan animasi
+        * Popup informasi detail
+        ```python
+        def create_indonesia_map(df, selected_disaster, features):
+            m = folium.Map(
+                location=[center_lat, center_long],
+                zoom_start=4
+            )
+            # Marker dan popup implementation
+            for idx, row in df.iterrows():
+                folium.CircleMarker(
+                    location=province_coords,
+                    radius=radius,
+                    popup=popup_text,
+                    color=color
+                ).add_to(m)
+        ```
+
+   4. Analisis Temporal:
+      - Tren per Cluster:
+        * Perubahan komposisi cluster
+        * Stabilitas keanggotaan cluster
+        * Pola musiman
+
+   5. Validasi Hasil:
+      - Interpretabilitas:
+        * Kesesuaian dengan pengetahuan domain
+        * Kejelasan karakteristik cluster
+      - Stabilitas:
+        * Konsistensi hasil dengan random_state berbeda
+        * Robustness terhadap outliers
+      - Actionability:
+        * Kegunaan praktis hasil clustering
+        * Dasar pengambilan keputusan
+
+   6. Dashboard Evaluasi:
+      - Komponen Interaktif:
+        * Filter temporal
+        * Seleksi jenis bencana
+        * Perbandingan cluster
+      - Metrik Real-time:
+        * Update silhouette score
+        * Statistik cluster dinamis
+      - Visualisasi Responsif:
+        * Peta choropleth
+        * Grafik tren
+        * Analisis komparatif
+
+6. **Deployment**
+   
+   **Dashboard Streamlit:**
+   - Visualisasi interaktif:
+     * Peta choropleth Indonesia
+     * Grafik tren temporal
+     * Analisis cluster
+   
+   **Fitur Utama:**
+   1. Filter temporal
+   2. Pemilihan jenis bencana
+   3. Analisis komparatif
+   4. Eksplorasi data spasial
+
+### 📈 Hasil dan Temuan
+
+**Analisis Cluster:**
+1. **Cluster Karakteristik:**
+   - Cluster 0: Provinsi dengan risiko tinggi gempa
+   - Cluster 1: Daerah rawan banjir dan longsor
+   - Cluster 2: Wilayah dengan risiko kebakaran hutan
+   - Cluster n: [sesuai optimal_k]
+
+2. **Pola Spasial:**
+   - Visualisasi menggunakan folium
+   - Marker dinamis untuk hotspot
+   - Animasi untuk kejadian aktif
+
+3. **Tren Temporal:**
+   - Analisis seasonality
+   - Korelasi antar bencana
+   - Prediksi pola
+
+### 🎯 Rekomendasi
+
+1. **Kebijakan:**
+   - Prioritisasi wilayah berdasarkan cluster
+   - Alokasi sumber daya sesuai karakteristik
+   - Program mitigasi spesifik
+
+2. **Operasional:**
+   - Penempatan tim sesuai zonasi
+   - Sistem logistik adaptif
+   - Early warning system
+
+3. **Edukasi:**
+   - Program awareness sesuai risiko lokal
+   - Pelatihan tanggap bencana
+   - Sosialisasi peta risiko
+
+### 📱 Pengembangan Kedepan
+
+1. **Teknis:**
+   - Integrasi data real-time
+   - Machine learning prediktif
+   - API untuk mobile apps
+
+2. **Fungsional:**
+   - Sistem notifikasi otomatis
+   - Modul pelaporan bencana
+   - Dashboard mobile
+
+### 👥 Tim Pengembang
+[Isi dengan informasi tim]
+
+### 📝 Referensi
+1. Badan Pusat Statistik (BPS)
+2. Badan Nasional Penanggulangan Bencana (BNPB)
+3. Scikit-learn Documentation: K-Means Clustering
+4. CRISP-DM Methodology Guide
+5. Python Libraries:
+   - Streamlit
+   - Folium
+   - Scikit-learn
+   - Pandas
+   - NumPy 
