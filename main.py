@@ -458,12 +458,28 @@ def main():
     # Add title with name and student ID
     st.title("Analisis dan Pengelompokan Pola Bencana Alam di Indonesia Menggunakan Metode K-Means Clustering")
     
-    # Add author info with custom styling
+    # Add author info and social media links with custom styling
     st.markdown("""
-    <div style='text-align: center; padding: 10px 0px 20px 0px;'>
-        <p style='font-size: 18px; margin: 0;'>Ridwan Mubarok</p>
-        <p style='font-size: 16px; color: #666; margin: 0;'>230401010053</p>
+    <div style='text-align: center; padding: 10px 0px 30px 0px;'>
+        <h3 style='font-size: 20px; margin: 0; font-weight: normal;'>Ridwan Mubarok</h3>
+        <p style='font-size: 16px; color: #666; margin: 5px 0 15px 0;'>230401010053</p>
+        <div style='display: flex; justify-content: center; gap: 20px;'>
+            <a href='https://www.linkedin.com/feed/' target='_blank' style='color: #0077B5; text-decoration: none;'>
+                <i class='fab fa-linkedin'></i> LinkedIn
+            </a>
+            <a href='https://www.instagram.com/amubhya/' target='_blank' style='color: #E4405F; text-decoration: none;'>
+                <i class='fab fa-instagram'></i> Instagram
+            </a>
+            <a href='https://github.com/' target='_blank' style='color: #333; text-decoration: none;'>
+                <i class='fab fa-github'></i> GitHub
+            </a>
+        </div>
     </div>
+    """, unsafe_allow_html=True)
+
+    # Add Font Awesome for social media icons
+    st.markdown("""
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     """, unsafe_allow_html=True)
 
     # Custom CSS untuk menu navigasi
