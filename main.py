@@ -460,26 +460,94 @@ def main():
     
     # Add author info and social media links with custom styling
     st.markdown("""
-    <div style='text-align: left; padding: 20px; margin: 20px 0; 
-         border: 2px solid #f0f2f6; border-radius: 10px; 
-         background-color: #ffffff; max-width: 500px;'>
-        <h3 style='font-size: 20px; margin: 0; font-weight: normal; color: #0e1117;'>Ridwan Mubarok</h3>
-        <p style='font-size: 16px; color: #666; margin: 5px 0 15px 0;'>230401010053</p>
-        <div style='display: flex; gap: 20px;'>
+    <div style='
+        text-align: left; 
+        padding: 25px; 
+        margin: 20px 0; 
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        background: rgba(17, 25, 40, 0.75);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.25);
+        max-width: 500px;
+    '>
+        <h3 style='
+            font-size: 22px; 
+            margin: 0; 
+            font-weight: 500; 
+            color: rgba(255, 255, 255, 0.95);
+            letter-spacing: 0.5px;
+        '>Ridwan Mubarok</h3>
+        <p style='
+            font-size: 16px; 
+            color: rgba(255, 255, 255, 0.7); 
+            margin: 5px 0 20px 0;
+            letter-spacing: 0.5px;
+        '>230401010053</p>
+        <div style='
+            display: flex; 
+            gap: 20px;
+            flex-wrap: wrap;
+        '>
             <a href='https://www.linkedin.com/in/ridwan-mubarok/' target='_blank' 
-               style='color: #0077B5; text-decoration: none; display: flex; align-items: center; gap: 5px;'>
+               style='
+                   color: rgba(255, 255, 255, 0.9);
+                   text-decoration: none;
+                   display: flex;
+                   align-items: center;
+                   gap: 7px;
+                   padding: 8px 12px;
+                   border-radius: 8px;
+                   background: rgba(0, 119, 181, 0.2);
+                   transition: all 0.3s ease;
+               ' onmouseover='this.style.background="rgba(0, 119, 181, 0.3)"' 
+                 onmouseout='this.style.background="rgba(0, 119, 181, 0.2)"'>
                 <i class='fab fa-linkedin'></i> LinkedIn
             </a>
             <a href='https://www.instagram.com/amubhya/' target='_blank' 
-               style='color: #E4405F; text-decoration: none; display: flex; align-items: center; gap: 5px;'>
+               style='
+                   color: rgba(255, 255, 255, 0.9);
+                   text-decoration: none;
+                   display: flex;
+                   align-items: center;
+                   gap: 7px;
+                   padding: 8px 12px;
+                   border-radius: 8px;
+                   background: rgba(228, 64, 95, 0.2);
+                   transition: all 0.3s ease;
+               ' onmouseover='this.style.background="rgba(228, 64, 95, 0.3)"'
+                 onmouseout='this.style.background="rgba(228, 64, 95, 0.2)"'>
                 <i class='fab fa-instagram'></i> Instagram
             </a>
             <a href='https://github.com/ridwanmubarok' target='_blank' 
-               style='color: #333; text-decoration: none; display: flex; align-items: center; gap: 5px;'>
+               style='
+                   color: rgba(255, 255, 255, 0.9);
+                   text-decoration: none;
+                   display: flex;
+                   align-items: center;
+                   gap: 7px;
+                   padding: 8px 12px;
+                   border-radius: 8px;
+                   background: rgba(51, 51, 51, 0.2);
+                   transition: all 0.3s ease;
+               ' onmouseover='this.style.background="rgba(51, 51, 51, 0.3)"'
+                 onmouseout='this.style.background="rgba(51, 51, 51, 0.2)"'>
                 <i class='fab fa-github'></i> GitHub
             </a>
             <a href='https://amubhya.com' target='_blank' 
-               style='color: #2196F3; text-decoration: none; display: flex; align-items: center; gap: 5px;'>
+               style='
+                   color: rgba(255, 255, 255, 0.9);
+                   text-decoration: none;
+                   display: flex;
+                   align-items: center;
+                   gap: 7px;
+                   padding: 8px 12px;
+                   border-radius: 8px;
+                   background: rgba(33, 150, 243, 0.2);
+                   transition: all 0.3s ease;
+               ' onmouseover='this.style.background="rgba(33, 150, 243, 0.3)"'
+                 onmouseout='this.style.background="rgba(33, 150, 243, 0.2)"'>
                 <i class='fas fa-globe'></i> Website
             </a>
         </div>
